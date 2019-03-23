@@ -1,4 +1,4 @@
-a<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -11,17 +11,13 @@ a<!DOCTYPE html>
       integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX"
       crossorigin="anonymous"
     />
-    <script src="https://code.highcharts.com/maps/highmaps.js"></script>
-    <script src="https://code.highcharts.com/maps/modules/data.js"></script>
-    <script src="https://code.highcharts.com/maps/modules/drilldown.js"></script>
-    <script src="https://code.highcharts.com/mapdata/countries/us/us-all.js"></script>
 
     <link
       href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="index.css">
 
-    <script src="http://code.highcharts.com/mapdata/custom/world.js"></script>
     <script
       src="https://code.jquery.com/jquery-3.3.1.js"
       integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
@@ -32,167 +28,18 @@ a<!DOCTYPE html>
     </script>
   </head>
 
+
   <body>
-    <div
-      id="container"
-      style="height: 500px; min-width: 310px; max-width: 800px; margin: 0 auto"
-    ></div>
-    <script>
-      $(function() {
-        /*
-TODO:
-- Check data labels after drilling. Label rank? New positions?
-- Not US Mainland text
-- Separators
-*/
-
-        var data = Highcharts.geojson(Highcharts.maps["countries/us/us-all"]),
-          // Some responsiveness
-          small = $("#container").width() < 400;
-
-        // Set drilldown pointers
-        $.each(data, function(i) {
-          this.drilldown = this.properties["hc-key"];
-          this.value = i; // Non-random bogus data
-        });
-
-        // Instanciate the map
-        Highcharts.mapChart("container", {
-          chart: {
-            events: {
-              drilldown: function(e) {
-                alert(e.point.drilldown);
-
-                if (!e.seriesOptions) {
-                  var chart = this,
-                    mapKey = "countries/us/" + e.point.drilldown + "-all",
-                    // Handle error, the timeout is cleared on success
-                    fail = setTimeout(function() {
-                      if (!Highcharts.maps[mapKey]) {
-                        chart.showLoading(
-                          '<i class="icon-frown"></i> Failed loading ' +
-                            e.point.name
-                        );
-
-                        fail = setTimeout(function() {
-                          chart.hideLoading();
-                        }, 1000);
-                      }
-                    }, 3000);
-
-                  // Show the spinner
-                  chart.showLoading(
-                    '<i class="icon-spinner icon-spin icon-3x"></i>'
-                  ); // Font Awesome spinner
-
-                  // Load the drilldown map
-                  $.getScript(
-                    "https://code.highcharts.com/mapdata/" + mapKey + ".js",
-                    function() {
-                      data = Highcharts.geojson(Highcharts.maps[mapKey]);
-
-                      // Set a non-random bogus value
-                      $.each(data, function(i) {
-                        this.value = i;
-                        this.drilldown = this.properties["hc-key"];
-                      });
-
-                      // Hide loading and add series
-                      chart.hideLoading();
-                      clearTimeout(fail);
-                      chart.addSeriesAsDrilldown(e.point, {
-                        name: e.point.name,
-                        data: data,
-                        dataLabels: {
-                          enabled: true,
-                          format: "{point.name}"
-                        }
-                      });
-                    }
-                  );
-                }
-
-                this.setTitle(null, { text: e.point.name });
-              },
-              drillup: function() {
-                this.setTitle(null, { text: "USA" });
-              }
-            }
-          },
-
-          title: {
-            text: "Patient Service Score"
-          },
-
-          subtitle: {
-            text: "USA",
-            floating: true,
-            align: "right",
-            y: 50,
-            style: {
-              fontSize: "16px"
-            }
-          },
-
-          legend: small
-            ? {}
-            : {
-                layout: "vertical",
-                align: "right",
-                verticalAlign: "middle"
-              },
-
-          colorAxis: {
-            min: 0,
-            minColor: "#E6E7E8",
-            maxColor: "#005645"
-          },
-
-          mapNavigation: {
-            enabled: true,
-            buttonOptions: {
-              verticalAlign: "bottom"
-            }
-          },
-
-          plotOptions: {
-            map: {
-              states: {
-                hover: {
-                  color: "#EEDD66"
-                }
-              }
-            }
-          },
-
-          series: [
-            {
-              data: data,
-              name: "USA",
-              dataLabels: {
-                enabled: true,
-                format: "{point.properties.postal-code}"
-              }
-            }
-          ],
-
-          drilldown: {
-            activeDataLabelStyle: {
-              color: "#FFFFFF",
-              textDecoration: "none",
-              textOutline: "1px #000000"
-            },
-            drillUpButton: {
-              relativeTo: "spacingBox",
-              position: {
-                x: 0,
-                y: 60
-              }
-            }
-          }
-        });
-      });
-    </script>
+    <h1 id="home-title">Medlink App</h1>
+    <div class="container-fluid ">
+      <div id="home">
+        <input type="text" class="form-control" style="display: inline-block" placeholder="Enter you zipcode">
+        <button type="submit" class="btn btn-primary btn-raised mx-3" style="display: inline-block">Search</button>
+      </div>
+      <footer>
+        <p id="copyright">Copyright 2019 Privacy Legal</p>
+      </footer>
+    </div>
 
     <script
       src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js"
